@@ -10,11 +10,14 @@
 % a Catheter", arxiv.com
 
 % Load Tomogram
-load('examples\savedTom1.mat')
+load('examples\savedTom.mat')
 
 % Load System Compensation
 % To make your own system compensation, see SystemCompensationStarterScript.m
 load('examples\SystemCompensation.mat') 
+
+% Load Colormaps
+load('examples\colormaps.mat') 
 
 % Chracterize PMD
 [ill_dgd, det_dgd,sps] = characterizeSysCom(sysComp);
@@ -35,43 +38,50 @@ n_slices = size(binned_tom,2);
 pstruct.fwx = 6; % lateral filtering
 pstruct.dz = 5; % axial filtering
 pstruct.dzres = 4.8; % axial resolution
+
 for slice_ind = 1:n_slices
 
     % Use full spectrum tomogram to create intensity image
     tomogram = full_tom{slice_ind};
     intensity = abs(squeeze(tomogram(1,:,:))).^2 + abs(squeeze(tomogram(2,:,:))).^2;
 
-    % Observe intensity image
-    figure,
-    subplot(2,2,1)
-    imagesc(10*log10(intensity)),colormap('gray')
-    title("Intensity Image (dB)")
-
     % Convert binned vectors to stokes for processing
+    disp("Converting to Stokes...")
     binned_stokes = makeStokes(binned_tom{slice_ind},3);
 
     % Send into SIPS Processing Pipeline
-    % Retardance & DOP ONLY
+    % Birefringence & Depolarization ONLY
+    disp("Computing Birefringence & Depolarization...")
     outRet = SIPSProcess(binned_stokes,pstruct,Q,C);
 
-    % Retardance, DOP & Optic Axis
+    % Birefringence & Depolarization & Optic Axis
+    disp("Computing Birefringence, Depolarization & Optic Axis...")
     out = SIPSOAProcessCath(binned_stokes,intensity,pstruct,Q,C);
     
-    % Plot Images
+    %% Plot Images
     dopImage = outRet.dop;
     retImage = outRet.ret;
     retImage(dopImage<dopThresh) = 0;
     oaImage = out.phi;
     oaImage(dopImage<dopThresh) = 0;
 
-    subplot(2,2,2)
-    imagesc(retImage, [0,120])
-    title("Retardance")
-    subplot(2,2,3)
-    imagesc(outRet.dop,[0,1])
-    title("Degree of Polarization")
-    subplot(2,2,4)
+
+    figure,
+    ax1= subplot(2,2,1)
+    imagesc(10*log10(intensity)),
+    title("Intensity Image (dB)")
+    colormap(ax1,'gray')
+    ax2 = subplot(2,2,2)
+    imagesc(retImage, [0,100])
+    title("Birefringence")
+    colormap(ax2,cmapB)
+    ax3 = subplot(2,2,3)
+    imagesc(1-outRet.dop,[0,0.4])
+    title("Depolarization")
+    colormap(ax3,cmapD)
+    ax4 = subplot(2,2,4)
     imagesc(oaImage,[-pi,pi])
     title("Depth-Resolved OA")
+    colormap(ax4,cmapOA)
     pause
 end
