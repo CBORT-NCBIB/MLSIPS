@@ -22,7 +22,8 @@ syscomstruct.isFilt = 0; % is this data filtered prior
 sysComp = estimateSystemCompensation(S1,syscomstruct);
 
 % Evaulate System Compensation
-[ill_dgd, det_dgd,sps] = characterizeSysCom(sysComp);
+sps = getSPS(sysComp);
+
 %%
 disp("Spectral Polarization Spread = "+sps)
 disp("")
