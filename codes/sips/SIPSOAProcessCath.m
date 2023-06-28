@@ -1,24 +1,24 @@
 function out = SIPSOAProcessCath(S1,int,procStruct,Q,C)
-% Here we attempt to repeat the processing scripts in PS process, however
-% with only a single input states
+% This script extimates the polarization properties of samples using a
+% single input state, with depth-corrected optic axis and catheter
+% transmission compensation
+
+% INPUTS: Spectrally-binned Stokes vectors, intensity mask for catheter  system compensation matrices,
+% processing parameters
+% OUTPUTS: retardance, DOP, singular values to compute error metric,
+% depth-resolved optic axis
+
 
 % the only two mandatory arguments
 fwx = procStruct.fwx;
 dz = procStruct.dz;
 dopTh = 0.7;
-wcorr = [];
-rc = [];
-dzres = 4.8;
-cumulative = false; % output cumulative signal
 unwrapMask = [];
-noDepthCorr = true;
 roiz = 1:1000; % axial range to consider
 fwaxial = 1;% for comparison without spectral binning
 fwz = 5; % axial filtering range of local ret
 fw = 30; % lateral filtering to estimate surface signal and rotation due to sheath birefringence
 dzres = 4.8;
-rc = [];
-wcorr = [];
 cumulative = true; % flag for processing cumulative signal
 sysComp = systemCompensation;
 outputLevel = 2;
@@ -69,63 +69,22 @@ dop = mean(QUVf./S1f(:,:,:,1),3);
 % Make Stokes into Jones vector for GDA
 tom = Stokes2Jones(permute(S1f(:,:,:,2:4),[4,1,2,3]));
 
-redFact = 10e4;
-%tom = tom ./ redFact;
-tom = tom./sqrt(abs(tom(1,:,:,:)).^2+abs(tom(2,:,:,:)).^2);
 Nbins = size(S1,3);
-
-% Estimate C & Q
-%[C,Q] = estimateCQSIPS(S1f);
 
 dimQ = size(Q);
 
 if dimQ(1) ~= 2
-    %Q = reshape(Q,[2,2,Nbins]);
     C = reshape(C,[2,2,Nbins]);
 
 end
 
-% Dimensions & parameters
-
-% dim = 150;
-% startRow = 1;
-% startCol = 250;
-% 
-% tom = tom(:,startRow:startRow+dim,startCol:startCol+dim,:);
-dimA = size(tom,2);
-dimL = size(tom,3);
-
-maxIter = 60;
-tol = 1e-3;
-alpha = 0.8;
-gamma = 0.2;
-step = 0.4;
-
-tic
-
-if useSVD == 0 
-    [outTom,gdTime] = vectorizedMomentumGDA(C,Q,tom,dimA,dimL,maxIter,tol,alpha,gamma,dop);
-    r = cat(1,outTom,zeros(1,dimA,dimL));
-else
-    if outputLevel>1
-    [r,singVals]= svdDecomposition(C,Q,tom);
-    out.singVals = singVals;
-    else
-    r= svdDecomposition(C,Q,tom);
-    end
-end
-%outTom = vectorizeGDAOrthoConstraint(C,Q,tom,dimA,dimL,maxIter,tol,alpha);
-%outTom = vectorizedGDARiemannian(C,Q,tom,dimA,dimL,maxIter,tol,step,dop);
-
-toc
-
+r= svdDecomposition(C,Q,tom);
 MM = squeeze(makeRot(r));
 
 if outputLevel > 1
     out.OA1 = decomposeRot(MM);
 end
 
-%MM = euclideanRotation(MM + MM([1,4,7,2,5,8,3,6,9]',:,:).*[1;1;-1;1;1;-1;-1;-1;1],true);
 dmn = MatrixMultiply(MM(:,2:end,:),MM([1,4,7,2,5,8,3,6,9],1:end-1,:));
 locoa = cat(2,zeros(3,1,size(MM,3)),decomposeRot(dmn));
 Omegaf = imfilter(permute(locoa,[2,3,1]),ones(dz,1)/dz);
@@ -328,13 +287,7 @@ out.dop = dop;
 out.mask = mmask;
 out.ret = retFinal;
 out.phi = mod(phi + pi,2*pi)-pi;%do not include sheathAngle, as it may vary in between B-scans
-%out.phi = mod(phi + out.sheathAngle + pi,2*pi)-pi;
-out.PA = Omegafn;
 
 
-out.fwz = fwz;
-out.fwx = fwx;
-out.unwrapMask = unwrapMask;
-out.tom = tom;
-out.MM = MM;
+
 

@@ -18,6 +18,5 @@ Mq = makeRot3x3(r);
 bp = squeeze(Mq(1,:,:));
 % Find difference between adjacent bins
 diffbp = bp(:,2:end)-bp(:,1:end-1);
-% Get overall angular length
 sps = sum(sqrt(sum(diffbp.^2,1)));
 end

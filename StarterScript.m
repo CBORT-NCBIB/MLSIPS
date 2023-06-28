@@ -57,9 +57,9 @@ n_slices = size(binned_tom,2);
 
 %% Process Sections
 % Processing structure
-pstruct.fwx = 6; % lateral filtering
-pstruct.dz = 5; % axial filtering
-pstruct.dzres = 4.8; % axial resolution
+pstruct.fwx = 6; % lateral filtering (in px)
+pstruct.dz = 5; % axial filtering (in px)
+pstruct.dzres = 4.8; % axial resolution (in um)
 
 for slice_ind = 1:n_slices
 

@@ -9,10 +9,13 @@ S2 = squeeze(2*real(tom(1,:,:,:).*conj(tom(2,:,:,:))));
 S3 = squeeze(-2*imag(tom(1,:,:,:).*conj(tom(2,:,:,:))));
 
 if nargout == 2
-    
-    varargout{1} = squeeze(reshape(cat(4,S0(:,1:2:2*dimtom(2),:),S1(:,1:2:2*dimtom(2),:),S2(:,1:2:2*dimtom(2),:),S3(:,1:2:2*dimtom(2),:)),[dimtom,4]));
-    varargout{2} = squeeze(reshape(cat(4,S0(:,2:2:2*dimtom(2),:),S1(:,2:2:2*dimtom(2),:),S2(:,2:2:2*dimtom(2),:),S3(:,2:2:2*dimtom(2),:)),[dimtom,4]));
-
+    if outdim == 3
+        varargout{1} = squeeze(reshape(cat(4,S1(:,1:2:2*dimtom(2),:),S2(:,1:2:2*dimtom(2),:),S3(:,1:2:2*dimtom(2),:)),[dimtom,4]));
+        varargout{2} = squeeze(reshape(cat(4,S1(:,2:2:2*dimtom(2),:),S2(:,2:2:2*dimtom(2),:),S3(:,2:2:2*dimtom(2),:)),[dimtom,4]));
+    else
+        varargout{1} = squeeze(reshape(cat(4,S0(:,1:2:2*dimtom(2),:),S1(:,1:2:2*dimtom(2),:),S2(:,1:2:2*dimtom(2),:),S3(:,1:2:2*dimtom(2),:)),[dimtom,4]));
+        varargout{2} = squeeze(reshape(cat(4,S0(:,2:2:2*dimtom(2),:),S1(:,2:2:2*dimtom(2),:),S2(:,2:2:2*dimtom(2),:),S3(:,2:2:2*dimtom(2),:)),[dimtom,4]));
+    end
 else
     if outdim == 3
     S = cat(4,S1,S2,S3);
