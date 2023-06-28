@@ -5,8 +5,8 @@ CSIPS = reshape(makeJones(sysComAv.symRotVec),[2,2,N]);
 QTSIPS = reshape(makeJones(-sysComAv.alignRotVec),[2,2,N]);
 
 % Q Alone
-r = sysComAv.alignRotVec;
-r2 =  sysComAv.symRotVec;
+r = double(sysComAv.alignRotVec);
+r2 =  double(sysComAv.symRotVec);
 %CQT
 for i = 1:N
    r2(:,i) = JonesDecomp(QTSIPS(:,:,i)*CSIPS(:,:,i));

@@ -9,6 +9,9 @@
 % [1] G.L. Jones, Q. Xiong, X. Liu, B. E. Bouma, and M. Villiger. "Single-Input Polarization-Sensitive Optical Coherence Tomography Through
 % a Catheter", arxiv.com
 
+addpath(genpath(fullfile('codes')));
+addpath(genpath(fullfile('examples')));
+
 % Load Tomogram
 load('examples\savedTom.mat')
 
@@ -83,5 +86,4 @@ for slice_ind = 1:n_slices
     imagesc(oaImage,[-pi,pi])
     title("Depth-Resolved OA")
     colormap(ax4,cmapOA)
-    pause
 end
