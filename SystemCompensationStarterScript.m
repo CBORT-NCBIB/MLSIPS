@@ -7,7 +7,7 @@
 % where DIM refers to a 3 or 4 component Stokes vector. We will be using
 % 3-component stokes vectors
 
-S1 = %... add your own processing scheme
+S1 = [];%... add your own processing scheme
 
 % Place Stokes vectors in the following structure format (5D single)
 % S1 = [axial dimension, lateral dimension, # spectral bins, 3 (stokes parameters), # slices]
