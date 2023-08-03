@@ -1,6 +1,8 @@
 function out = SIPSProcess(S1,procStruct,Q,C)
-% This script extimates the polarization properties of samples using a
-% single input state
+% out = SIPSOAProcessCath(S1,int,procStruct,Q,C)
+% Estimates the polarization properties of samples using a single input 
+% state
+%
 % INPUTS: Spectrally-binned Stokes vectors, system compensation matrices,
 % processing parameters
 % OUTPUTS: retardance, DOP, singular values to compute error metric,
@@ -8,9 +10,7 @@ function out = SIPSProcess(S1,procStruct,Q,C)
 
 % the only two mandatory arguments
 fwx = procStruct.fwx;
-dz = procStruct.dz;
-fwaxial = 1;% for comparison without spectral binning
-fwz = 5; % axial filtering range of local ret
+fwz = 1; % default axial filtering range of local ret vector
 dzres = 4.8;
 
 fnames = fieldnames(procStruct);
@@ -36,11 +36,6 @@ end
 nx = (round(fwx*1.5)-1)/2;
 nx = linspace(-nx,nx,round(fwx*1.5))*2*sqrt(log(2))/fwx;
 h = exp(-nx.^2);
-if fwz>1
-    nz = (round(fwaxial*1.5)-1)/2;
-    nz = linspace(-nz,nz,round(fwaxial*1.5))*2*sqrt(log(2))/fwaxial;
-    h = exp(-nz(:).^2)*h;
-end
 h = h/sum(h(:));
 S1f = imfilter(S1,h,'circular');
 
@@ -67,8 +62,8 @@ MMT = pagetranspose(MM);
 dmn = pagemtimes(MM(:,:,2:end,:),MMT(:,:,1:end-1,:));
 locoa = cat(2,zeros(3,1,size(MM,4)),decomposeRot(dmn));
 
-Omegaf = imfilter(permute(locoa,[2,3,1]),ones(dz,1)/dz);
-retFinal = sqrt(sum(Omegaf.^2,3))/dzres/pi*180*100;
+Omegaf = imfilter(permute(locoa,[2,3,1]),ones(fwz,1)/fwz);
+retFinal = sqrt(sum(Omegaf.^2,3))/dzres/pi*180*100;%retFinal is in units of degrees of retardance per 100µm of tissue depth
 
 out = struct;
 out.dop = sum(dop,3);

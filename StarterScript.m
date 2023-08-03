@@ -10,8 +10,8 @@
 % a Catheter", arxiv.com
 
 %% Add supporting code and example data to path
-addpath(genpath(fullfile('codes')));
-addpath(genpath(fullfile('examples')));
+addpath(genpath('codes'));
+addpath(genpath('examples'));
 
 %% Load Tomogram
 % Loaded inputs are as follows
@@ -24,7 +24,7 @@ addpath(genpath(fullfile('examples')));
 %   contains the binned complex reconstructed tomogram. 
 %   2 - tomogram channels, 1024 - 1D depth scan size, 512 - # of 1D scans
 %   per lateral image, 9 - number of bins
-load('examples\savedTom.mat')
+load(fullfile('examples','savedTom.mat'))
 
 
 %% Load System Compensation
@@ -34,12 +34,11 @@ load('examples\savedTom.mat')
     % symRotVec -> rotation vector which describes asymmetric compensation
     % alignRotVec -> rotation vector which describes symmetric compensation
     % visualize -> shows value of the above across spectral bins
-load('examples\SystemCompensation.mat') 
-
+sysComp = systemCompensation(fullfile('examples','SystemCompensation.mat'));
 %% Load Colormaps
 % Obtain 3 colormaps which help visualize the depolarization (D),
 % birefringence(B) and optic axis (OA)
-load('examples\colormaps.mat') 
+load(fullfile('examples','colormaps.mat'))
 
 %% Chracterize PMD
 sps = getSPS(sysComp);
@@ -48,7 +47,7 @@ sps = getSPS(sysComp);
 %% Find Symmetric and Asymmetric Corrctions
 N = size(sysComp.alignRotVec,2); % Number of spectral bins
 Q = reshape(makeJones(-sysComp.alignRotVec),[4,N]); % Symmetric Compensation Jones Matrix
-C = reshape(makeJones(sysComp.symRotVec),[4,N]); % Asymmetric Compensation Jones Matrix
+Cinv = reshape(makeJones(sysComp.symRotVec),[4,N]); % Asymmetric Compensation Jones Matrix
 dopThresh = 0.7;
 
 %% Number of Cross Sections to Process
@@ -58,8 +57,8 @@ n_slices = size(binned_tom,2);
 %% Process Sections
 % Processing structure
 pstruct.fwx = 6; % lateral filtering (in px)
-pstruct.dz = 5; % axial filtering (in px)
-pstruct.dzres = 4.8; % axial resolution (in um)
+pstruct.fwz = 5; % axial filtering of final local retardance vector (in px)
+pstruct.dzres = 4.8; % axial sampling in tissue (in um/px)
 
 for slice_ind = 1:n_slices
 
@@ -74,11 +73,11 @@ for slice_ind = 1:n_slices
     % Send into SIPS Processing Pipeline
     % Birefringence & Depolarization ONLY
     disp("Computing Birefringence & Depolarization...")
-    outRet = SIPSProcess(binned_stokes,pstruct,Q,C);
+    outRet = SIPSProcess(binned_stokes,pstruct,Q,Cinv);
 
     % Birefringence & Depolarization & Optic Axis
     disp("Computing Birefringence, Depolarization & Optic Axis...")
-    out = SIPSOAProcessCath(binned_stokes,intensity,pstruct,Q,C);
+    out = SIPSOAProcessCath(binned_stokes,intensity,pstruct,Q,Cinv);
     
     %% Plot Images
     dopImage = outRet.dop;

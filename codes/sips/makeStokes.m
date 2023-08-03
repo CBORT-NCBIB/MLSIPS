@@ -1,5 +1,12 @@
 function varargout = makeStokes(tom,outdim)
-% t must be start with dim 2 
+% Stokes = makeStokes(tom) converts the coherent tomogram tom into its
+% corresponding Stokes vector Stokes. if outdim defaults to 3, returning a
+% three-component Stokes vector. outdim = 4 results in the full
+% four-component vector. If two output Stokes vectors are requested, the
+% input tomogram is split into even and odd A-lines, returning the
+% corresponding Stokes vectors (used for conventional DIPS).
+
+% The first dimension of t must be 2 
 dimtom = [size(tom,2),size(tom,3),size(tom,4)];
 dimtom(2) = dimtom(2)/2;
 
