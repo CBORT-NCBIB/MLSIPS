@@ -182,8 +182,6 @@ n_slices = size(S1ftot,5);
 Nel = 1001;
 Naz = 2001;
 HHSum = zeros(Nel,Naz,9);
-
-
     
 for sliceInd = 1:n_slices
     S1f = squeeze(S1ftot(:,:,:,:,sliceInd));
@@ -191,7 +189,7 @@ for sliceInd = 1:n_slices
     QUVf = sqrt(dot(S1f(:,:,:,2:4),S1f(:,:,:,2:4),4));
     S1n = (S1f./QUVf);
     dop = mean(QUVf./S1f(:,:,:,1),3);
-    mask = dop>0.9;
+    mask = dop>0.7;
 
     % Get Histogram
     [HH,binsEl,binsAz] = poincareHistogram(squeeze(S1n(:,:,:,2:4)),Naz,Nel,mask);

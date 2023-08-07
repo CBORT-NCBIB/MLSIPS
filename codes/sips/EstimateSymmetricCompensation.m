@@ -82,6 +82,7 @@ for i = 1:size(sliceInds,2)
     S1n = (S1f./QUVf); 
 end
 end
+
 function[S1n,dop] = getDOP(S1f)
     QUVf = sqrt(dot(S1f(:,:,:,2:4),S1f(:,:,:,2:4),4));
     dop = mean(QUVf./S1f(:,:,:,1),3);
