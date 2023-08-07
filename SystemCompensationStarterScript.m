@@ -7,11 +7,15 @@
 % where DIM refers to a 3 or 4 component Stokes vector. We will be using
 % 3-component stokes vectors
 
-S1 = [];%... add your own processing scheme
+%S1 = [];%... add your own processing scheme
 
 % Place Stokes vectors in the following structure format (5D single)
 % S1 = [axial dimension, lateral dimension, # spectral bins, 3 (stokes parameters), # slices]
 
+% for demonstration, load existing Stokes vectors to get Stot
+load(fullfile('examples','StokesVectorsForSystemCompensation.mat'))
+S1 = Stot;
+clear('Stot');
 
 % Define processing parameters
 syscomstruct.isMod = 0; % is this data using A-line polarization modulation 
@@ -21,7 +25,7 @@ syscomstruct.isFilt = 0; % is this data filtered prior
 % Feed into processing pipeline
 sysComp = estimateSystemCompensation(S1,syscomstruct);
 
-% Evaulate System Compensation
+% Evaluate System Compensation
 sps = getSPS(sysComp);
 
 %%

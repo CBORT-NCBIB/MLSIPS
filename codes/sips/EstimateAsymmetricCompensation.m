@@ -1,4 +1,3 @@
-
 function[out,HHfinal] = EstimateAsymmetricCompensation(S1,Naz,Nel)
 %%
 
@@ -237,57 +236,4 @@ function curr = get2DHistInd(p)
     curr = [ind1;ind2];
    
 end
-
-% rowNum = floor(dim(1)/arraySize);
-%     colNum = floor(dim(2)/arraySize);
-%     % Cycle through pixels
-%     for rowVal = 1:rowNum%dim(1)
-% %         if(mod(row,10)==0)
-% %             disp("Row = "+num2str(row))
-% %         end
-% 
-%         for colVal = 1:colNum%dim(2)
-%             % Determine if local maximum within 
-%             row = (rowVal-1)*2*arraySize;
-%             col = (colVal-1)*2*arraySize;
-%             subArray = hBin(max(1,row-arraySize):min(dim(1),row+arraySize),max(1,col-arraySize):min(dim(2),col+arraySize));
-%             % Determine maximum in this subarray
-%             [maxVal] = max(max(subArray))
-%             [minVal] = min(min(subArray));
-%             if (maxVal-minVal) > minDiff
-%                 % Record
-%                 disp("Row - "+num2str(row)+", Col = "+num2str(col)+", N = "+num2str(nBin))
-%                 disp("Diff = "+num2str(maxVal-minVal))
-%                 [indx,indy]=find(subArray==maxVal)
-% %                 figure,
-% %                 subplot(1,2,1)
-% %                 imagesc(hBin)
-% %                 subplot(1,2,2)
-% %                 imagesc(subArray)
-% %                 hold on
-% %                 plot(indy,indx,'sqr','MarkerSize',16,'LineWidth',2,'Color','r')
-% %                 pause
-%                 msMaxBin = [msMaxBin;row,col,maxVal-minVal];
-%                 numMaxBin = numMaxBin+1;
-%             end
-%         end
-%     end
-% 
-%     figure,
-%     imagesc(hBin)
-%     hold on
-%     for i = 1:size(msMaxBin,1)
-%        plot(msMaxBin(i,1),msMaxBin(i,2),'sqr','MarkerSize',16,'LineWidth',2,'Color','r') 
-%        hold on
-%     end
-%     pause
-% if numMaxBin>0
-%     msMax{nBin} = msMaxBin;
-%     numMax(nBin) = numMaxBin;
-% else
-%     maxVal = max(hBin(:));
-%     [indx,indy]=find(subArray==maxVal)
-%     msMax{nBin} = [indy,indx,0];
-%     numMax(nBin) = 1;
-% end
 

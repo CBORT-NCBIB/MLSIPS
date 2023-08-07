@@ -1,5 +1,8 @@
-
 function [out,histBin] = estimateSystemCompensation(S1,procStruct)
+%[out,histBin] = estimateSystemCompensation(S1,procStruct) retrieves the
+%symmetric and asymmetric system matrices, C and Q, from heterogeneous
+%Stokes vector data. S1 has the dimensions: axial dimension, lateral 
+% dimension, # spectral bins, 3 (stokes parameters), # slices
 
     modTrue = 0;
     isFilt = 0;
@@ -45,9 +48,9 @@ function [out,histBin] = estimateSystemCompensation(S1,procStruct)
    [cOut,histBin] = EstimateAsymmetricCompensation(S1f,Naz,Nel);
 
     % Get Symmetric Matrix
-    CT = cOut.symMatrix;
-    C = pagetranspose(CT);
-    CvecSIPS = decomposeRot(C);
+    C = cOut.symMatrix;
+    CT = pagetranspose(C);
+    CvecSIPS = decomposeRot(CT);
 
     disp("Aligning Q Matrices")
     for i = 1:size(S1,5)
@@ -55,21 +58,15 @@ function [out,histBin] = estimateSystemCompensation(S1,procStruct)
         % Get Q matrix (alignment)
         qOut = EstimateSymmetricCompensation(C,N,S1f(:,:,:,:,i));
         tempSC = qOut.sysCompensation;
-
-        % Stand in so averaging works properly
-        tempSC.Hmat = zeros(4,4,N);
-        tempSC.NH = 1;
+        tempSC.symRotVec = CvecSIPS;
         SC(i)=tempSC;
     end
 
     % Average system compensation
-    SCTot = mean(SC(i),2);
-    % Feed in C vector
-    SCTot.symRotVec = CvecSIPS;
+    SCTot = mean(SC,2);
     out = SCTot;
 end
 function [S1fTot] = filterStokes(S1tot,fwx)   
-fwz = 1;
 for i = 1:size(S1tot,5)
 
     S1 = squeeze(S1tot(:,:,:,:,i));
@@ -83,11 +80,6 @@ for i = 1:size(S1tot,5)
     nx = (round(fwx*1.5)-1)/2;
     nx = linspace(-nx,nx,round(fwx*1.5))*2*sqrt(log(2))/fwx;
     h = exp(-nx.^2);
-    if fwz>1
-        nz = (round(fwaxial*1.5)-1)/2;
-        nz = linspace(-nz,nz,round(fwaxial*1.5))*2*sqrt(log(2))/fwaxial;
-        h = exp(-nz(:).^2)*h;
-    end
     h = h/sum(h(:));
     S1f = imfilter(S1,h,'circular');
     S1fTot(:,:,:,:,i) = S1f;
