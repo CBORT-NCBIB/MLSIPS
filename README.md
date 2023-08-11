@@ -22,3 +22,9 @@ and estimates overall reliability
 
 _Required Inputs_
 1. **Spectrally-binned Stokes Vectors**: Your own, computed via recstrTom or your prefered reconstruction method
+
+Example Data
+-----------
+1. **Downloading Data:** Please download example data directly from the examples folder rather than download with the repository to ensure they are downloaded in their entirety. 
+
+2. **Stokes Vectors for System Compensation:** Please note that the Stokes vectors present in the example data are simply meant to illustrate how the system compensation code works. Due to Github's file size contraints we cannot provide sufficient data (20-100 cross sections, we currently provide 5) to accurately characterize the system.
